@@ -48,9 +48,9 @@ class GitClient:
         """创建提交"""
         author_date = f"{commit_date.isoformat()} {self.config.hour}:00:00"
 
-        # 确保有文件变更
+        # 确保有文件变更（每次内容不同）
         marker_file = self.repo_path / ".commit_marker"
-        marker_file.write_text(f"{message}\n")
+        marker_file.write_text(f"{message} at {author_date}\n")
 
         self._run_git("add", ".")
 
