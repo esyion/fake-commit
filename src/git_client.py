@@ -90,5 +90,5 @@ class GitClient:
                 message = self.config.format_commit_message(commit_date)
                 self.commit(message, commit_date)
                 total_commits += 1
-        self._run_git("push", "-u", "origin", self.config.branch)
+        self._run_git("push", "-u", "origin2", self.config.branch)
         return total_commits
