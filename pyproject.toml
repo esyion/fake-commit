@@ -1,6 +1,6 @@
 [project]
 name = "fake-commit"
-version = "0.1.1"
+version = "0.1.2"
 description = "生成假 git 提交历史的 CLI 工具"
 readme = "README.md"
 license = { text = "MIT" }
