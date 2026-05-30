@@ -1,7 +1,7 @@
 """Git 操作封装模块"""
 import os
 import subprocess
-from datetime import date, datetime
+from datetime import date
 from pathlib import Path
 
 from .config import Settings
@@ -33,16 +33,12 @@ class GitClient:
 
     def setup_author(self) -> None:
         """设置 git 作者信息"""
-        os.environ["GIT_AUTHOR_NAME"] = self.config.author_name
-        os.environ["GIT_AUTHOR_EMAIL"] = self.config.author_email
-        os.environ["GIT_COMMITTER_NAME"] = self.config.author_name
-        os.environ["GIT_COMMITTER_EMAIL"] = self.config.author_email
+        self._run_git("config", "user.name", self.config.author_name)
+        self._run_git("config", "user.email", self.config.author_email)
 
     def commit(self, message: str, commit_date: date) -> None:
         """创建提交"""
         author_date = f"{commit_date.isoformat()} {self.config.hour}:00:00"
-        os.environ["GIT_AUTHOR_DATE"] = author_date
-        os.environ["GIT_COMMITTER_DATE"] = author_date
 
         # 确保有文件变更
         marker_file = self.repo_path / ".commit_marker"
@@ -50,11 +46,16 @@ class GitClient:
 
         self._run_git("add", ".")
 
+        env = {
+            **os.environ,
+            "GIT_AUTHOR_DATE": author_date,
+            "GIT_COMMITTER_DATE": author_date,
+        }
         result = subprocess.run(
             ["git", "-C", str(self.repo_path), "commit", "-m", message],
             capture_output=True,
             text=True,
-            env={**os.environ, "GIT_AUTHOR_DATE": author_date, "GIT_COMMITTER_DATE": author_date},
+            env=env,
         )
         if result.returncode != 0:
             raise RuntimeError(f"Commit failed: {result.stderr}")
